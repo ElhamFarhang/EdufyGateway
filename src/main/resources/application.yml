@@ -1,0 +1,34 @@
+spring:
+  application:
+    name: EdufyGateway
+  cloud:
+    gateway:
+      server:
+        webmvc:
+          routes:
+            - id: EdufySystem
+              uri: http://edufysystem:9900
+              predicates:
+                - Path=/api/edufy/**
+              filters:
+                - StripPrefix=0
+            - id: EdufyUserAuthMS
+              uri: http://edufyuserauthms:9903
+              predicates:
+                - Path=/user/**
+              filters:
+                - StripPrefix=0
+            - id: PodcastMS
+              uri: http://podcastms:9904
+              predicates:
+                - Path=/edufy/pods/**
+              filters:
+                - StripPrefix=2
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycinstance:8080/realms/edufy-realm
+
+server:
+  port: 9901
