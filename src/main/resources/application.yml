@@ -55,21 +55,21 @@ spring:
             - id: UserActivityService
               uri: http://useractivityservice:9905
               predicates:
-                - Path=/user/activity/**
+                - Path=/activity/**
               filters:
                 - StripPrefix=0
 
             - id: UserMicroservice
               uri: http://usermicroservice:7074
               predicates:
-                - Path=/
+                - Path=/user/**
               filters:
                 - StripPrefix=0
 
             - id: EdufyVideo2
               uri: http://edufyvideo2:8089
               predicates:
-                - Path=/
+                - Path=/video/**
               filters:
                 - StripPrefix=0
 
