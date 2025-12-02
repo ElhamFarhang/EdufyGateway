@@ -1,0 +1,69 @@
+
+# ---------- Elham - user-auth-activity.yml ----------
+networks:
+  edufy_network:
+    external: true
+
+services:
+# ---------- Databases ----------
+
+  useractivitydb:
+    container_name: useractivitydb
+    hostname: useractivitydb
+    image: mysql:8.0
+    ports:
+      - 9906:3306
+    networks:
+      - edufy_network
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: useractivitydb
+      MYSQL_USER: username
+      MYSQL_PASSWORD: password
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+# ---------- MicroServices ----------
+
+  edufyuserauthms:
+    build:
+      context: ./EdufyUserAuthMS
+      dockerfile: Dockerfile
+    container_name: edufyuserauthms
+    ports:
+      - 9903:9903
+    networks:
+      - edufy_network
+
+  useractivityservice:
+    build:
+      context: ./UserActivityService
+      dockerfile: Dockerfile
+    container_name: useractivityservice
+    ports:
+      - 9905:9905
+    networks:
+      - edufy_network
+    depends_on:
+      useractivitydb:
+        condition: service_healthy
+
+  edufygateway:
+    build:
+      context: ./EdufyGateway
+      dockerfile: Dockerfile
+    container_name: edufygateway
+    ports:
+      - 9901:9901
+    networks:
+      - edufy_network
+    environment:
+      KEYCLOAK_URL: http://keycloak:8080
+      KEYCLOAK_REALM: edufy-realm
+      KEYCLOAK_CLIENT_ID: edufy-client
+      KEYCLOAK_CLIENT_SECRET: NkOmvT2HzUxUET9VqJB5knird4fkMcUO
+
+
+
